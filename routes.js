@@ -1,6 +1,7 @@
+const helloWorld = require("./routes/holaMundo");
+const riesgos = require("./routes/riesgos");
 
-const helloWorld = require("./routes/holaMundo")
-
-module.exports = app => {
+module.exports = (app) => {
   app.use(helloWorld);
+  app.use(riesgos);
 };
