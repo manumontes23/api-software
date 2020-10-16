@@ -11,28 +11,28 @@ const collection2 = "perdidaEsperada"
  * @param {Json} res argumento de respuesta
  */
 function reportePerdidaEsperada(req, res) {
-  const { entidad } = req.params;
-  if (entidad) {
+  let { id } = req.params;
+  if (id) {
     let fun = (dataBase) =>
       dataBase
         .collection(collection2)
-        .find({ entidad })
-        .toArray((err, item) => {
+        .findOne({ id }, (err, item) => {
           if (err) throw err;
-          if (item.length > 0) {
+          if (item) {
             res.status(200).send({
               status: true,
               data: item,
-              message: `reporte de la entidad ${entidad}`,
+              message: `reporte de la entidad ${id}`,
             });
           } else {
             res.status(400).send({
               status: false,
               data: [],
-              message: `No existe registro de perdida esperada para la entidad ${entidad}`,
+              message: `No existe registro de perdida esperada para la entidad ${id}`,
             });
           }
-        });
+        })
+
     if (isThereAnyConnection(client)) {
       const dataBase = client.db(DBName);
       fun(dataBase);
@@ -58,18 +58,18 @@ function reportePerdidaEsperada(req, res) {
  * @param {Json} res argumento de respuesta
  */
 function crearRiesgoCredito(req, res) {
-  const { pi, ci,cc,ed, otros } = req.body;
-  const {entidad} = req.params
-  if ( pi && ci && cc && ed && otros) {
+  let { pi, ci, cc, ed, impacto, probabilidad, otros } = req.body;
+  const { id } = req.params
+  if (pi && ci && cc && ed && probabilidad && impacto) {
     let fun = (dataBase) =>
       dataBase
         .collection(collection)
-        .insertOne({ entidad, pi, ci,cc,ed, otros }, (err, item) => {
+        .insertOne({ id, pi, ci, cc, ed, probabilidad, impacto, otros }, (err, item) => {
           if (err) throw err;
           if (item.result.n > 0) {
             res.status(201).send({
               status: true,
-              data: { entidad, pi, ci,cc,ed },
+              data: { id, pi, ci, cc, ed, impacto, probabilidad },
               message: `Riesgo creado correctamente`,
             });
           } else {
