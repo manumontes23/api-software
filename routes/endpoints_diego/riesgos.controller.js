@@ -1,40 +1,61 @@
 const { DBName, client } = require("../../config/mongo.config");
 const { isThereAnyConnection } = require("../../utils/helper");
 const collection = "riesgosCredito"
+const collection2 = "perdidaEsperada"
+
 
 
 /**
  * Obtiene el reporte de la perdida esperada de una entidad.
  * @param {Json} req argumento solicitado
- * @param {*} res argumento de respuesta
+ * @param {Json} res argumento de respuesta
  */
-function getPerdidaEsperada(req, res) {
-  const {pd, lgd, ead} = req.body
-  const {entidad} = req.params
-  if (pd && lgd && ead) {
-    let pe = pd*lgd*ead
-  
-    res.status(200).send({
-      status: true,
-      entity:entidad,
-      data: pe,
-      message: `La perdida esperada para la entidad ${entidad} es ${pe}`,
-    });
-  }else{
-    res.status(404).send({
+function reportePerdidaEsperada(req, res) {
+  const { entidad } = req.params;
+  if (entidad) {
+    let fun = (dataBase) =>
+      dataBase
+        .collection(collection2)
+        .find({ entidad })
+        .toArray((err, item) => {
+          if (err) throw err;
+          if (item.length > 0) {
+            res.status(200).send({
+              status: true,
+              data: item,
+              message: `reporte de la entidad ${entidad}`,
+            });
+          } else {
+            res.status(400).send({
+              status: false,
+              data: [],
+              message: `No existe registro de perdida esperada para la entidad ${entidad}`,
+            });
+          }
+        });
+    if (isThereAnyConnection(client)) {
+      const dataBase = client.db(DBName);
+      fun(dataBase);
+    } else {
+      client.connect((err) => {
+        if (err) throw err;
+        const dataBase = client.db(DBName);
+        fun(dataBase);
+      });
+    }
+  } else {
+    res.status(400).send({
       status: false,
-      entity:entidad,
       data: [],
-      message: `Parametros incompletos`,
+      message: "No se han ingresado todos los campos",
     });
-  } 
+  }
 }
-
 
 /**
  * Crea un nuevo riesgo de credito en la BD
  * @param {Json} req argumento solicitado
- * @param {*} res argumento de respuesta
+ * @param {Json} res argumento de respuesta
  */
 function crearRiesgoCredito(req, res) {
   const { pi, ci,cc,ed, otros } = req.body;
@@ -80,6 +101,6 @@ function crearRiesgoCredito(req, res) {
 
 
 module.exports = {
-  getPerdidaEsperada,
+  reportePerdidaEsperada,
   crearRiesgoCredito
 };

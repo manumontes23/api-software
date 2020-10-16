@@ -1,5 +1,5 @@
 
-const helloWorld = require("./routes/holaMundo")
+// const helloWorld = require("./routes/holaMundo")
 const endpoints_diego = require("./routes/endpoints_diego")
 
 module.exports = app => {
