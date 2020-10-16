@@ -3,6 +3,11 @@ const { isThereAnyConnection } = require("../../utils/helper");
 const collection = "riesgosCredito"
 
 
+/**
+ * Obtiene el reporte de la perdida esperada de una entidad.
+ * @param {Json} req argumento solicitado
+ * @param {*} res argumento de respuesta
+ */
 function getPerdidaEsperada(req, res) {
   const {pd, lgd, ead} = req.body
   const {entidad} = req.params
@@ -25,6 +30,12 @@ function getPerdidaEsperada(req, res) {
   } 
 }
 
+
+/**
+ * Crea un nuevo riesgo de credito en la BD
+ * @param {Json} req argumento solicitado
+ * @param {*} res argumento de respuesta
+ */
 function crearRiesgoCredito(req, res) {
   const { pi, ci,cc,ed } = req.body;
   const {entidad} = req.params
