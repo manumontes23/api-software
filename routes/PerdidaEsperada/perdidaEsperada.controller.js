@@ -1,24 +1,28 @@
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache();
 
 function perdidaEsperada(req, res) {
     let body = req.body;
     if(body.pd && body.ead && body.lgd){
         let Pe = body.pd  * body.lgd * body.ead
-        localStorage.setItem('PerdidaE',Pe);
+        myCache.set( 'PerdidaE',Pe, 1000 );
         res.status(200).send({
             status: true,
             data: Pe,
             message: `Perdida Esperada Calculada con exito`,
           });
     }else{
-        res.status(400).send({
+        myCache.set( 'PerdidaE',0, 1000 );;
+        res.status(400).send({            
             message:'Error al Calcular Perdida Esperada'
         });
     }  ;
 };
 
 function recuperacionPe(req,res){    
-    let pe = localStorage.getItem('PerdidaE')
-    if (pe){
+    let pe = myCache.get( 'PerdidaE');
+    console.log(pe)
+    if (pe!=null){
         let recuPe = pe * 0.3;
         res.status(200).send({
             status: true,
