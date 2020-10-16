@@ -37,13 +37,13 @@ function getPerdidaEsperada(req, res) {
  * @param {*} res argumento de respuesta
  */
 function crearRiesgoCredito(req, res) {
-  const { pi, ci,cc,ed } = req.body;
+  const { pi, ci,cc,ed, otros } = req.body;
   const {entidad} = req.params
-  if ( pi && ci && cc && ed) {
+  if ( pi && ci && cc && ed && otros) {
     let fun = (dataBase) =>
       dataBase
         .collection(collection)
-        .insertOne({ entidad, pi, ci,cc,ed }, (err, item) => {
+        .insertOne({ entidad, pi, ci,cc,ed, otros }, (err, item) => {
           if (err) throw err;
           if (item.result.n > 0) {
             res.status(201).send({
