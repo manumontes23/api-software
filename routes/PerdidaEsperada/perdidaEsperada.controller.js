@@ -56,6 +56,7 @@ function obtenerPerdidaEsperada(req, res) {
           .findOne({ _id: ObjectID(id) }, (err, item) => {
             if (err) throw err;
             if (item) {
+                myCache.set( 'PerdidaE',item.perdidaEsperada, 1000 )
               res.status(201).send({
                 status: true,
                 data: item,
@@ -93,6 +94,8 @@ function obtenerPerdidaEsperada(req, res) {
         const { id } = req.params;
       
         if (pd && lgd && ead && id) {
+            let Pe= pd * lgd * ead
+          myCache.set( 'PerdidaE',Pe, 1000 )
           let fun = (dataBase) =>
             dataBase
               .collection(perdidaCollection)
